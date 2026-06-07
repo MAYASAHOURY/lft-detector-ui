@@ -160,4 +160,10 @@ def main():
             total_correct += c
             total_tests   += t
 
-    prin
+    print(f"\n{'='*64}")
+    print(f"  OVERALL: {total_correct}/{total_tests} correct  ({total_correct/total_tests*100:.0f}% accuracy)")
+    print(f"{'='*64}\n")
+
+
+if __name__ == "__main__":
+    main()

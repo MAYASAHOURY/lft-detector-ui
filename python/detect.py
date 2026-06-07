@@ -765,4 +765,112 @@ def main() -> None:
         for poly, conf, cid in zip(polys, confs, cls_ids):
             pts_int = poly.astype(np.int32)
 
-            cv2.polylines
+            cv2.polylines(annotated, [pts_int], isClosed=True,
+                          color=WHITE, thickness=line_thick + 3, lineType=cv2.LINE_AA)
+            cv2.polylines(annotated, [pts_int], isClosed=True,
+                          color=GREEN, thickness=line_thick, lineType=cv2.LINE_AA)
+
+            label = f"{names.get(int(cid), str(int(cid)))}"
+            (tw, th), baseline = cv2.getTextSize(
+                label, cv2.FONT_HERSHEY_SIMPLEX, text_scale, text_thick
+            )
+            top_idx = int(np.argmin(pts_int[:, 1]))
+            anchor = pts_int[top_idx]
+            pad_x, pad_y = 4, 3
+            box_x1 = int(anchor[0])
+            box_y1 = int(max(0, anchor[1] - th - pad_y * 2 - 4))
+            box_x2 = box_x1 + tw + pad_x * 2
+            box_y2 = box_y1 + th + pad_y * 2
+
+            cv2.rectangle(annotated, (box_x1, box_y1), (box_x2, box_y2),
+                          GREEN, thickness=cv2.FILLED)
+            cv2.putText(
+                annotated, label,
+                (box_x1 + pad_x, box_y2 - pad_y - 2),
+                cv2.FONT_HERSHEY_SIMPLEX, text_scale, WHITE, text_thick,
+                lineType=cv2.LINE_AA,
+            )
+
+            xs = poly[:, 0]
+            ys = poly[:, 1]
+            box_w = float(xs.max() - xs.min())
+            box_h = float(ys.max() - ys.min())
+
+            edges = [(poly[(i + 1) % 4][0] - poly[i][0],
+                      poly[(i + 1) % 4][1] - poly[i][1]) for i in range(4)]
+            longest = max(edges, key=lambda e: e[0] * e[0] + e[1] * e[1])
+            rot_deg = math.degrees(math.atan2(longest[1], longest[0]))
+            while rot_deg > 90:
+                rot_deg -= 180
+            while rot_deg < -90:
+                rot_deg += 180
+
+            detections_meta.append({
+                "class_id": int(cid),
+                "class_name": names.get(int(cid), str(int(cid))),
+                "confidence": float(conf),
+                "rotation_deg": round(float(rot_deg), 2),
+                "bbox_width": round(box_w, 1),
+                "bbox_height": round(box_h, 1),
+                "_poly": poly.copy(),   # stashed for Stage-2 cropping; stripped before JSON
+            })
+            detection_polys.append((float(conf), poly.copy()))
+
+    detections_meta.sort(key=lambda d: d["confidence"], reverse=True)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not cv2.imwrite(str(output_path), annotated):
+        fail(f"Failed to write annotated image to {output_path}")
+
+    # ---- Stage 2: crop + classify EACH detected cassette ----
+    # Runs only when a crop output path was supplied (the "Read Result" step).
+    # Every detection goes through the IDENTICAL pipeline (line analysis +
+    # classifier fusion). The top-level classification/crop_image mirror the
+    # highest-confidence detection so older callers keep working. Each detection
+    # also carries its own classification + crop_image for per-cassette review.
+    classification = None
+    crop_image_out = None
+    if do_classify and detections_meta:
+        # Prefer the MobileNetV3 classifier; fall back to the old YOLOv8-cls.
+        base = model_path.parent
+        mnv3_path = base / "python" / "classifier_mnv3.pt"
+        if not mnv3_path.exists():
+            mnv3_path = base / "classifier_mnv3.pt"
+        yolo_path = base / "python" / "classifier.pt"
+        if not yolo_path.exists():
+            yolo_path = base / "classifier.pt"
+
+        # detections_meta is already sorted by confidence (desc); each dict still
+        # carries its own "_poly", so per-detection crops stay correctly aligned.
+        for k, d in enumerate(detections_meta):
+            poly_k = d.get("_poly")
+            if poly_k is None:
+                d["classification"], d["crop_image"] = None, None
+                continue
+            crop_path_k = crop_output_path.with_name(
+                f"{crop_output_path.stem}_det{k + 1}{crop_output_path.suffix}")
+            clf_k, crop_k = _classify_detection(img, poly_k, crop_path_k,
+                                                mnv3_path, yolo_path)
+            d["classification"], d["crop_image"] = clf_k, crop_k
+
+        # Top-level mirrors the best (first) detection — backward compatible.
+        classification = detections_meta[0].get("classification")
+        crop_image_out = detections_meta[0].get("crop_image")
+
+    # Strip the private polygon we stashed for cropping before serializing.
+    for d in detections_meta:
+        d.pop("_poly", None)
+
+    print(json.dumps({
+        "ok": True,
+        "annotated_image": str(output_path).replace("\\", "/"),
+        "crop_image": crop_image_out,
+        "image_width": img_w,
+        "image_height": img_h,
+        "detections": detections_meta,
+        "classification": classification,
+    }))
+
+
+if __name__ == "__main__":
+    main()
