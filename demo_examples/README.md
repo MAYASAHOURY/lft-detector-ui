@@ -1,7 +1,7 @@
 # Demo Examples — COVID-19 LFT Detector
 
-Representative images covering all four outcome categories.  
-Each image was processed through the full two-stage pipeline (YOLOv8-OBB → crop → YOLOv8-cls + classical line counter).
+Representative images covering the three valid outcome categories, plus a set of corrupted/unusable inputs that the system correctly rejects.  
+Each valid image was processed through the full two-stage pipeline (YOLOv8-OBB → crop → YOLOv8-cls + classical line counter).
 
 ---
 
@@ -41,17 +41,19 @@ Each image was processed through the full two-stage pipeline (YOLOv8-OBB → cro
 
 ---
 
-## Not Detected (YOLO found no cassette)
+## Corrupted / Unusable Input
 
-| Image | Expected | App Result | Confidence | Notes |
-|-------|----------|------------|------------|-------|
-| not_detected_01.png | — | **No cassette detected** | N/A | Browser error icon (1019×556 transparent PNG, 19 non-transparent pixels); no real cassette |
-| not_detected_02.png | — | **No cassette detected** | N/A | Browser error icon (42 non-transparent pixels); failed web download |
-| not_detected_03.png | — | **No cassette detected** | N/A | Same format — transparent canvas with red 1px error indicator |
-| not_detected_04.png | — | **No cassette detected** | N/A | Same format — saved from broken image link |
-| not_detected_05.png | — | **No cassette detected** | N/A | Same format — dataset corruption; not a real LFT photo |
+These are **not real LFT photographs**. They are failed web downloads that ended up in the original dataset — each file is a 1019×556 RGBA PNG where the entire canvas is fully transparent except for 18–42 solid-red pixels (a browser broken-image icon).
 
-> **Why "not detected" matters:** The system correctly refuses to emit a result when no cassette is found, rather than guessing. These five files represent corrupted/missing image downloads in the original dataset — YOLO's correct response is zero detections.
+> **Note on YOLO accuracy:** In the full labeled dataset, YOLO correctly detected every real cassette. There are no genuine LFT photos where YOLO failed to localise a cassette. The system correctly returns "no cassette detected" for these files because there is genuinely nothing to detect.
+
+| Image | App Result | Notes |
+|-------|------------|-------|
+| corrupted_01.png | **No cassette detected** | Transparent PNG; ~42 non-transparent pixels (browser broken-image icon) |
+| corrupted_02.png | **No cassette detected** | Transparent PNG; ~21 non-transparent pixels |
+| corrupted_03.png | **No cassette detected** | Transparent PNG; ~19 non-transparent pixels |
+| corrupted_04.png | **No cassette detected** | Transparent PNG; ~18 non-transparent pixels |
+| corrupted_05.png | **No cassette detected** | Transparent PNG; ~21 non-transparent pixels |
 
 ---
 
