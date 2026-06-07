@@ -1,0 +1,508 @@
+/* ===========================================================
+   COVID-19 LFT Detector
+   Design: Apple Photos · Apple Health · Apple Vision Pro
+   Language: Apple HIG — breathing space, restraint, clarity
+
+   Palette (Apple semantic colors):
+     bg              : #F5F5F7   warm white page — never pure white
+     surface         : #FFFFFF   cards and panels
+     surface-2       : #FAFAFA   slightly recessed surfaces
+     separator       : rgba(60,60,67,0.12)  Apple separator tint
+     label           : #1D1D1F   primary label — near-black
+     secondary-label : #6E6E73   secondary label
+     tertiary-label  : #AEAEB2   tertiary label / placeholder
+     system-fill     : #F2F2F7   Apple system fill (pill backgrounds)
+     accent          : #16A47A   clinical green — actions only
+     accent-tint     : #EDF8F4   very soft green surface
+     positive        : #B5281A   muted crimson
+     negative        : #1A7A52   deep medical green (badge only)
+     invalid         : #A05A10   muted amber
+   =========================================================== */
+
+/* ===================== Page ===================== */
+
+.root-pane {
+    -fx-background-color: #F5F5F7;
+    -fx-font-family: "Segoe UI", "SF Pro Display", "Helvetica Neue", "System", sans-serif;
+}
+
+/* ===================== Header — glass bar ===================== */
+
+.app-header {
+    -fx-padding: 16 32 15 32;
+    -fx-background-color: rgba(255,255,255,0.88);
+    -fx-border-color: transparent transparent rgba(60,60,67,0.10) transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.logo-circle {
+    -fx-min-width: 34; -fx-min-height: 34;
+    -fx-pref-width: 34; -fx-pref-height: 34;
+    -fx-background-color: #EDF8F4;
+    -fx-background-radius: 9;
+}
+
+.app-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1D1D1F;
+}
+
+.app-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #AEAEB2;
+}
+
+/* Folder pill — borderless, just a fill */
+.folder-pill {
+    -fx-padding: 6 12 6 12;
+    -fx-background-color: #F2F2F7;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.folder-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #3A3A3C;
+}
+
+.sep-dot {
+    -fx-text-fill: #C7C7CC;
+    -fx-font-size: 12px;
+}
+
+/* Browse — only green element in the header */
+.browse-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #16A47A;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.browse-button:hover {
+    -fx-text-fill: #0E8B66;
+}
+
+/* ===================== Image Viewer — canvas ===================== */
+
+/* Borderless canvas, purely shadow-defined — Apple Photos feel */
+.image-stack {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.09), 32, 0, 0, 8);
+}
+
+.image-chip {
+    -fx-font-size: 10px;
+    -fx-text-fill: #C7C7CC;
+    -fx-background-color: rgba(255,255,255,0.82);
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 7;
+    -fx-border-color: rgba(60,60,67,0.08);
+    -fx-border-width: 1;
+    -fx-border-radius: 7;
+}
+
+/* ===================== Action Buttons ===================== */
+
+/* Primary — "Read All Results" — the ONE green CTA */
+.primary-button {
+    -fx-background-color: #16A47A;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 24 12 24;
+    -fx-background-radius: 14;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(22,164,122,0.28), 12, 0, 0, 3);
+}
+
+.primary-button:hover {
+    -fx-background-color: #138B68;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #0E7358;
+    -fx-effect: none;
+}
+
+.primary-button:disabled {
+    -fx-background-color: #D1D1D6;
+    -fx-text-fill: rgba(255,255,255,0.7);
+    -fx-effect: none;
+}
+
+/* Secondary — "Detect" — ghost/neutral, not green */
+.secondary-button {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #1D1D1F;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 12 24 12 24;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(60,60,67,0.18);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 1);
+}
+
+.secondary-button:hover {
+    -fx-background-color: #F9F9F9;
+}
+
+.secondary-button:pressed {
+    -fx-background-color: #F2F2F7;
+    -fx-effect: none;
+}
+
+.secondary-button:disabled {
+    -fx-opacity: 0.38;
+    -fx-effect: none;
+}
+
+/* ===================== Bottom Navigation — Apple Photos bar ===================== */
+
+.bottom-bar {
+    -fx-padding: 11 32 13 32;
+    -fx-background-color: rgba(255,255,255,0.88);
+    -fx-border-color: rgba(60,60,67,0.10) transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Ghost nav buttons — neutral dark text, minimal chrome */
+.nav-button {
+    -fx-background-color: rgba(255,255,255,0.0);
+    -fx-text-fill: #3A3A3C;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 8 18 8 18;
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(60,60,67,0.15);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+    -fx-min-width: 160;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(0,0,0,0.04);
+    -fx-border-color: rgba(60,60,67,0.25);
+}
+
+.nav-button:pressed {
+    -fx-background-color: rgba(0,0,0,0.07);
+    -fx-effect: none;
+}
+
+.nav-button:disabled {
+    -fx-opacity: 0.30;
+}
+
+.image-counter {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1D1D1F;
+}
+
+.status-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #AEAEB2;
+    -fx-alignment: center;
+    -fx-min-width: 240;
+}
+
+/* ===================== Right Panel — Health sidebar ===================== */
+
+/* Borderless white card, shadow-defined — no visible frame */
+.results-panel {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 22 20 20 20;
+    -fx-background-radius: 20;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 28, 0, 0, 6);
+}
+
+.panel-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1D1D1F;
+}
+
+/* Tiny uppercase section label */
+.panel-heading {
+    -fx-font-size: 10px;
+    -fx-text-fill: #AEAEB2;
+    -fx-font-weight: 600;
+}
+
+.details-panel {
+    -fx-padding: 8 0 14 0;
+    -fx-spacing: 10;
+}
+
+/* Invisible scroll container */
+.details-scroll {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.details-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.details-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 4;
+}
+
+.details-scroll .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.details-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #C7C7CC;
+    -fx-background-radius: 2;
+    -fx-opacity: 0.6;
+}
+
+.details-scroll .scroll-bar:vertical .increment-button,
+.details-scroll .scroll-bar:vertical .decrement-button {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+/* ===================== Cards ===================== */
+
+/* Empty state — spacious, calming, beautiful */
+.placeholder-card {
+    -fx-background-color: transparent;
+    -fx-padding: 32 22 32 22;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(60,60,67,0.08);
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-border-style: dashed;
+}
+
+/* Summary strip — slim, unobtrusive */
+.summary-card {
+    -fx-background-color: #FAFAFA;
+    -fx-padding: 13 16 13 16;
+    -fx-background-radius: 14;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.summary-count {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1D1D1F;
+}
+
+/* Per-detection card — Apple Health metric card style */
+.detection-card {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 14 16 14 16;
+    -fx-background-radius: 16;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+.detection-card:hover {
+    -fx-background-color: #FAFAFA;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 14, 0, 0, 3);
+}
+
+/* Selected — green accent glow, tinted bg */
+.detection-card-selected {
+    -fx-background-color: #F5FCF9;
+    -fx-border-color: #16A47A;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(22,164,122,0.14), 18, 0, 0, 4);
+}
+
+.det-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1D1D1F;
+}
+
+/* Crop thumbnail — floating photo card */
+.thumb-frame {
+    -fx-background-color: #F5F5F7;
+    -fx-padding: 8;
+    -fx-background-radius: 14;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 2);
+}
+
+/* ===================== Metrics & Typography ===================== */
+
+.metric-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #AEAEB2;
+    -fx-font-weight: 400;
+}
+
+.metric-value {
+    -fx-font-size: 12px;
+    -fx-text-fill: #3A3A3C;
+    -fx-font-weight: 500;
+}
+
+.metric-value-big {
+    -fx-font-size: 22px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1D1D1F;
+}
+
+.metric-strong {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1D1D1F;
+}
+
+.class-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1D1D1F;
+}
+
+/* Empty state text — larger, softer, more inviting */
+.hint-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #C7C7CC;
+    -fx-font-weight: 400;
+    -fx-line-spacing: 3;
+}
+
+.muted-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #C7C7CC;
+    -fx-font-style: italic;
+}
+
+.tally-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #3A3A3C;
+    -fx-font-weight: 500;
+}
+
+.error-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #B5281A;
+}
+
+/* ===================== Probability Bars ===================== */
+
+.prob-name {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6E6E73;
+    -fx-font-family: "Consolas", "SF Mono", "Courier New", monospace;
+}
+
+.prob-pct {
+    -fx-font-size: 11px;
+    -fx-text-fill: #3A3A3C;
+    -fx-font-weight: 600;
+    -fx-alignment: center-right;
+}
+
+.prob-track {
+    -fx-background-color: rgba(60,60,67,0.08);
+    -fx-background-radius: 3;
+    -fx-min-height: 5;
+    -fx-pref-height: 5;
+    -fx-padding: 0;
+}
+
+.prob-fill {
+    -fx-background-radius: 3;
+    -fx-opacity: 0.80;
+}
+
+/* ===================== Badges — pill style ===================== */
+
+.badge {
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-padding: 3 11 3 11;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.badge-positive {
+    -fx-background-color: #FEF2F2;
+    -fx-text-fill: #B5281A;
+}
+
+.badge-negative {
+    -fx-background-color: #EDF8F4;
+    -fx-text-fill: #1A7A52;
+}
+
+.badge-invalid {
+    -fx-background-color: #FEF7ED;
+    -fx-text-fill: #A05A10;
+}
+
+.badge-unknown {
+    -fx-background-color: #F2F2F7;
+    -fx-text-fill: #AEAEB2;
+}
+
+/* ===================== Legacy / misc ===================== */
+
+.side-card {
+    -fx-background-color: white;
+    -fx-padding: 16;
+    -fx-background-radius: 16;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16, 0, 0, 3);
+}
+
+.circle-button {
+    -fx-min-width: 36; -fx-min-height: 36;
+    -fx-pref-width: 36; -fx-pref-height: 36;
+    -fx-max-width: 36; -fx-max-height: 36;
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(60,60,67,0.18);
+    -fx-border-width: 1;
+    -fx-border-radius: 18;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.circle-button:hover {
+    -fx-background-color: #F9F9F9;
+}
+
+.circle-button:pressed {
+    -fx-background-color: #EDF8F4;
+}
+
+.circle-button:disabled {
+    -fx-opacity: 0.34;
+}
