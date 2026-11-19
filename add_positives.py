@@ -61,4 +61,9 @@ def main():
         target = val_dir if i in val_idx else train_dir
         if cv2.imwrite(str(target / f"{args.prefix}_{i:03d}.jpg"), crop, [cv2.IMWRITE_JPEG_QUALITY, 95]):
             if i in val_idx: sv += 1
-         
+            else: st += 1
+    print(f"\nTRAIN +{st}  VAL +{sv}  no-detection {nd}  failed {fl}")
+    print("Now run: python train_classifier_mobilenet.py")
+
+if __name__ == "__main__":
+    main()

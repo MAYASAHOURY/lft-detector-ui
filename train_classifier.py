@@ -217,3 +217,4 @@ plt.show()
 final_path = Path("python") / "classifier.pt"
 final_path.parent.mkdir(parents=True, exist_ok=True)
 shutil.copy(run_dir / "weights" / "best.pt", final_path)
+print("Saved classifier to:", final_path)

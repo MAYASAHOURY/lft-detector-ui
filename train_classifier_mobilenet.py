@@ -291,4 +291,4 @@ if NEW_PHOTOS_DIR.exists():
         ax.axis("off")
     plt.tight_layout(); plt.show()
 else:
-    print("NEW_PHOTOS_DIR not found — set it to a folder of test 
+    print("NEW_PHOTOS_DIR not found — set it to a folder of test images to run this cell.")
